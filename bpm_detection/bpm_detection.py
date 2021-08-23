@@ -31,6 +31,7 @@ from scipy import signal
 from ctypes import *
 from contextlib import contextmanager
 import pyaudio
+import re
 
 from rp8000 import midi
 import rtmidi
@@ -237,6 +238,14 @@ def bpm_detector(data, fs):
     print(bpm)
     return bpm, correl
 
+def detect_midi(mk):
+    midiout = rtmidi.MidiOut()
+    for port, name in enumerate(midiout.get_ports()):
+        if re.search(mk,name):
+            return True
+        else:
+            assert False, "No MIDI port found for %s" % mk
+
 def init_bpm(mk):
     rp = midi.SysEx(mk)
     if mk == 'RP8000':
@@ -259,10 +268,12 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
-    number = 5
     mk = 'RP8000mk2'
+    midi = False
+    while not midi:
+        midi = detect_midi(mk)
     rp = init_bpm(mk)
-    while number == 5:   
+    while midi:   
         record_wav(args.filename,args.window + 1)
         samps, fs = read_wav(args.filename)
         data = []
@@ -303,3 +314,4 @@ if __name__ == "__main__":
         n = range(0, len(correl))
         plt.plot(n, abs(correl))
         plt.show(block=True)
+        midi = detect_midi(mk)
