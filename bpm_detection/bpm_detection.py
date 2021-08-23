@@ -242,11 +242,11 @@ def detect_midi(mk):
     midiout = rtmidi.MidiOut()
     for port, name in enumerate(midiout.get_ports()):
         if re.search(mk,name):
-            midi = True
+            midiOn = True
         else:
-            midi = False
+            midiOn = False
     del midiout
-    return midi
+    return midiOn
 
 def init_bpm(mk):
     rp = midi.SysEx(mk)
@@ -271,11 +271,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     mk = 'RP8000mk2'
-    midi = False
-    while not midi:
-        midi = detect_midi(mk)
+    midiOn = False
+    while not midiOn:
+        midiOn = detect_midi(mk)
     rp = init_bpm(mk)
-    while midi:   
+    while midiOn:   
         record_wav(args.filename,args.window + 1)
         samps, fs = read_wav(args.filename)
         data = []
@@ -316,4 +316,4 @@ if __name__ == "__main__":
         n = range(0, len(correl))
         plt.plot(n, abs(correl))
         plt.show(block=True)
-        midi = detect_midi(mk)
+        midiOn = detect_midi(mk)
