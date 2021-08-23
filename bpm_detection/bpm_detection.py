@@ -242,9 +242,11 @@ def detect_midi(mk):
     midiout = rtmidi.MidiOut()
     for port, name in enumerate(midiout.get_ports()):
         if re.search(mk,name):
-            return True
+            midi = True
         else:
-            assert False, "No MIDI port found for %s" % mk
+            midi = False
+    del midiout
+    return midi
 
 def init_bpm(mk):
     rp = midi.SysEx(mk)
