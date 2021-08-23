@@ -35,6 +35,7 @@ import re
 
 from rp8000 import midi
 import rtmidi
+import time
 
 ERROR_HANDLER_FUNC = CFUNCTYPE(None, c_char_p, c_int, c_char_p, c_int, c_char_p)
 
@@ -274,6 +275,8 @@ if __name__ == "__main__":
     midiOn = False
     while not midiOn:
         midiOn = detect_midi(mk)
+        time.sleep(60)
+
     rp = init_bpm(mk)
     while midiOn:   
         record_wav(args.filename,args.window + 1)
