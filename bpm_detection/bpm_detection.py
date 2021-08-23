@@ -263,8 +263,9 @@ if __name__ == "__main__":
     mk = 'RP8000mk2'
     rp = init_bpm(mk)
     while number == 5:   
-        record_wav(args.filename,args.window + 1)
-        samps, fs = read_wav(args.filename)
+        #record_wav(args.filename,args.window + 1)
+        #samps, fs = read_wav(args.filename)
+        samps, fs = read_audio(args.window)
         data = []
         correl = []
         bpm = 0
