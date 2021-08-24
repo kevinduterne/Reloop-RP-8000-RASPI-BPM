@@ -256,8 +256,8 @@ def init_bpm(mk):
         rp.tempo_mode()
     return rp
 
-def set_bpm(bpm,rp):
-    rp.set_tempo(bpm)
+def set_bpm(bpm,rp,channel):
+    rp.set_tempo(bpm,channel)
 
 
 if __name__ == "__main__":
@@ -269,11 +269,17 @@ if __name__ == "__main__":
         default=3,
         help="Size of the the window (seconds) that will be scanned to determine the bpm. Typically less than 10 seconds. [3]",
     )
+    parser.add_argument(
+        "--channel",
+        type=float,
+        default=1,
+        help="Channel used for midi selection. [1]",
+    )
 
     args = parser.parse_args()
     mk = 'RP8000mk2'
     midiOn = detect_midi(mk)
-    rp = init_bpm(mk)
+    rp = init_bpm(mk,args.channel)
     while True:
         if not midiOn:
             midiOn = detect_midi(mk)
@@ -314,12 +320,12 @@ if __name__ == "__main__":
                     n = n + 1
 
                 bpm = numpy.median(bpms)
-                set_bpm(bpm,rp)
+                set_bpm(bpm,rp,args.channel)
                 print("Completed!  Estimated Beats Per Minute:", bpm)
-
                 n = range(0, len(correl))
                 plt.plot(n, abs(correl))
                 plt.show(block=True)
                 midiOn = detect_midi(mk)
             except (EOFError, KeyboardInterrupt):
                 print("Error happend")
+                rp.shutdown()
